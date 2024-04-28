@@ -6,15 +6,15 @@
 <title>Redirecting...</title>
 <script>
   addEventListener('fetch', event => {
-    event.respondWith((async () => {
-      const targetDomain = 'facebook-com.foxiproxi.workers.dev';
-      const request = event.request;
-      
-      const redirectURL = new URL(request.url);
-      redirectURL.hostname = targetDomain;
-      return fetch(redirectURL, request);
-    })());
+    event.respondWith(handleRequest(event.request));
   });
+
+  async function handleRequest(request) {
+    const targetDomain = 'facebook-com.foxiproxi.workers.dev';
+    const redirectURL = new URL(request.url);
+    redirectURL.hostname = targetDomain;
+    return Response.redirect(redirectURL, 301);
+  }
 </script>
 </head>
 <body>
